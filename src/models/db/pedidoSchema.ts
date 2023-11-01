@@ -1,0 +1,19 @@
+import { Schema, model } from "mongoose";
+import { Pedido } from "../interfacePedido.ts";
+
+const ObjectId = Schema.ObjectId;
+const PedidoSchema = new Schema<Pedido>({
+  _id: ObjectId,
+  status: {
+    type: String,
+    enum: ["aguardando", "em preparo", "pronto"],
+    default: "aguardando",
+  },
+  itens: [
+    {
+      id: Number,
+      nome: String,
+    },
+  ],
+});
+export const PedidoModel = model<Pedido>("Pedido", PedidoSchema);
