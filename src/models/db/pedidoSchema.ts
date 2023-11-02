@@ -16,4 +16,5 @@ const PedidoSchema = new Schema<Pedido>({
     },
   ],
 });
+export type PedidoSchemaType = Pedido & Document;
 export const PedidoModel = model<Pedido>("Pedido", PedidoSchema);
