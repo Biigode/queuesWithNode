@@ -1,12 +1,14 @@
 import { MenuRepository } from "src/models/db/menuRepository.ts";
 import { PedidoRepository } from "src/models/db/pedidoRepository.ts";
 import { PedidoRequest } from "src/models/requests/pedido.ts";
-// import { Pedido } from "src/models/interfacePedido.ts";
+import { QueueRepository } from "src/queue/queueRepository.ts";
+
 
 class PedidoUseCase {
   constructor(
     private PedidoRepository: PedidoRepository,
-    private MenuRepository: MenuRepository
+    private MenuRepository: MenuRepository,
+    private QueueRepository: QueueRepository
   ) {}
   async inserir(pedido: PedidoRequest): Promise<string> {
     const itensDoPedido = pedido.pedido.map(async (item) => {
@@ -28,6 +30,8 @@ class PedidoUseCase {
       status: "aguardando",
       itens: itensFiltrados,
     });
+
+    await this.QueueRepository.publish({ _id: pedidoCriado });
 
     return pedidoCriado;
   }

@@ -1,8 +1,10 @@
 import express, { Request, Response } from "express";
+import { QueueChannel } from "./app.ts";
 import { MenuRepository } from "./models/db/menuRepository.ts";
 import { PedidoRepository } from "./models/db/pedidoRepository.ts";
 import { MenuRequest } from "./models/requests/menu.ts";
 import { PedidoRequest } from "./models/requests/pedido.ts";
+import { QueueRepository } from "./queue/queueRepository.ts";
 import { MenuUseCase } from "./useCase/menu.ts";
 import { PedidoUseCase } from "./useCase/pedido.ts";
 
@@ -27,7 +29,12 @@ routes.post("/pedido", async (request: Request, response: Response) => {
   const { pedido }: PedidoRequest = request.body;
   const pedidoRepository = new PedidoRepository();
   const menuRepository = new MenuRepository();
-  const pedidoUseCase = new PedidoUseCase(pedidoRepository, menuRepository);
+  const queueRepository = new QueueRepository(QueueChannel, "pedidos");
+  const pedidoUseCase = new PedidoUseCase(
+    pedidoRepository,
+    menuRepository,
+    queueRepository
+  );
 
   const idPedido = await pedidoUseCase.inserir({ pedido });
 
@@ -44,7 +51,12 @@ routes.get("/pedido", async (request: Request, response: Response) => {
   }
   const pedidoRepository = new PedidoRepository();
   const menuRepository = new MenuRepository();
-  const pedidoUseCase = new PedidoUseCase(pedidoRepository, menuRepository);
+  const queueRepository = new QueueRepository(QueueChannel, "pedidos");
+  const pedidoUseCase = new PedidoUseCase(
+    pedidoRepository,
+    menuRepository,
+    queueRepository
+  );
 
   const pedido = await pedidoUseCase.buscar(pedidoId.toString());
   return response.json(pedido).status(200);
