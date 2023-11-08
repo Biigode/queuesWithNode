@@ -13,6 +13,8 @@
     "emitDeclarationOnly": true,
     "allowImportingTsExtensions": true
   },
+  "include": ["./**/*"],
+  "exclude": ["node_modules"],
 
   "ts-node": {
     "esm": true,

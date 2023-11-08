@@ -1,10 +1,13 @@
 import amqp from "amqplib";
+import { PortQueueConnection } from "../ports/queueConnection.ts";
 
-class QueueConnection {
+
+class AdapterQueueConnection extends PortQueueConnection {
   private connection: amqp.Connection | null = null;
   private channel: amqp.Channel | null = null;
 
   constructor() {
+    super();
     this.connect().then(() => console.log("Connected to Queue"));
   }
 
@@ -24,4 +27,4 @@ class QueueConnection {
   }
 }
 
-export { QueueConnection };
+export { AdapterQueueConnection };

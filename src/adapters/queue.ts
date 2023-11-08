@@ -1,7 +1,11 @@
 import amqp from "amqplib";
-import { Queue } from "src/models/interfaceQueue.ts";
-class QueueRepository {
+import { PortQueue } from "../ports/queue.ts";
+import { Queue } from "../interfaces/domain/interfaceQueue.ts";
+
+
+class AdapterQueue extends PortQueue {
   constructor(private channel: amqp.Channel, private queue: string) {
+    super(channel, queue);
     this.channel = channel;
     this.queue = queue;
     this.assertQueue().then(() => console.log("Queue asserted"));
@@ -13,7 +17,7 @@ class QueueRepository {
     });
   }
 
-  async publish(message: Queue) {
+  async publish(message: Queue): Promise<void> {
     if (!this.channel) {
       throw new Error("Cannot publish on closed channel");
     }
@@ -21,4 +25,4 @@ class QueueRepository {
   }
 }
 
-export { QueueRepository };
+export { AdapterQueue };
