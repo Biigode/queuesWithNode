@@ -1,9 +1,7 @@
 import mongoose from "mongoose";
-import { PortPedidoDb } from "../ports/pedidoDb.ts";
 import { Pedido } from "../interfaces/domain/interfacePedido.ts";
-import { PedidoModel } from "../schemas/pedidoSchema.ts";
-
-
+import { PedidoModel } from "../interfaces/schemas/pedidoSchema.ts";
+import { PortPedidoDb } from "../ports/pedidoDb.ts";
 
 class AdapterPedidoDb extends PortPedidoDb {
   async inserirPedido(pedido: Pedido): Promise<string> {

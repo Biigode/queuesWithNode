@@ -1,5 +1,5 @@
 import { Schema, model } from "mongoose";
-import { Pedido } from "../interfaces/domain/interfacePedido.ts";
+import { Pedido } from "../domain/interfacePedido.ts";
 
 const ObjectId = Schema.ObjectId;
 const PedidoSchema = new Schema<Pedido>({

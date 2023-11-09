@@ -1,9 +1,7 @@
 import mongoose from "mongoose";
-import { PortMenuDb } from "../ports/menuDb.ts";
 import { ItemMenu } from "../interfaces/domain/interfaceItemMenu.ts";
-import { MenuModel } from "../schemas/menuSchema.ts";
-
-
+import { MenuModel } from "../interfaces/schemas/menuSchema.ts";
+import { PortMenuDb } from "../ports/menuDb.ts";
 
 class AdapterMenuDb extends PortMenuDb {
   async inserirMenu(menu: ItemMenu): Promise<ItemMenu> {

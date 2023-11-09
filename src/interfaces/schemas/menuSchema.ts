@@ -1,5 +1,5 @@
 import { Schema, model } from "mongoose";
-import { ItemMenu } from "../interfaces/domain/interfaceItemMenu.ts";
+import { ItemMenu } from "../domain/interfaceItemMenu.ts";
 
 const ObjectId = Schema.ObjectId;
 
