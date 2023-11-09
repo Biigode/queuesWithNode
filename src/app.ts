@@ -1,18 +1,25 @@
 import express from "express";
 import mongoose from "mongoose";
-import { AdapterQueueConnection } from "./adapters/queueConnection.ts";
-import routes from "./routes.ts";
+import Router from "./routes/index.ts";
 
 await mongoose.connect("mongodb://localhost:27017/burguer");
-const channel = await new AdapterQueueConnection().connect();
-export { channel as QueueChannel };
 
 const app = express();
 
-
 app.use(express.json());
-app.use(routes);
+app.use("/", new Router().router);
 
-app.listen(3000, () => {
+const server = app.listen(3000, () => {
   console.log("Burger API started!");
+});
+
+process.on("SIGTERM", () => {
+  console.log("SIGTERM signal received. Shutting down gracefully.");
+  server.close(() => {
+    console.log("Server closed");
+    mongoose.connection.close(false).then(() => {
+      console.log("MongoDb connection closed.");
+    });
+  });
+  process.exit(0);
 });
