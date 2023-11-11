@@ -21,7 +21,7 @@ class AdapterPedido extends PortPedido {
     const itensDoPedido = pedido.pedido.map(async (item) => {
       const menu = await this.PortMenuDb.buscarPorId(item.id);
       if (!menu) {
-        throw new Error("Menu não encontrado");
+        throw new Error("Item do menu não encontrado");
       }
       return menu;
     });
