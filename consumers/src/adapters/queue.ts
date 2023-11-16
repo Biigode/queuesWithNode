@@ -1,27 +1,37 @@
 import amqp from "amqplib";
+import { PortProduzirPedido } from "../domains/ports/produzirPedido.ts";
 import { PortQueue } from "../ports/queue.ts";
-import { Queue } from "../interfaces/domain/interfaceQueue.ts";
-
 
 class AdapterQueue extends PortQueue {
-  constructor(private channel: amqp.Channel, private queue: string) {
-    super(channel, queue);
+  constructor(
+    private channel: amqp.Channel,
+    private produzirPedido: PortProduzirPedido
+  ) {
+    super(channel, produzirPedido);
     this.channel = channel;
-    this.queue = queue;
-    this.assertQueue().then(() => console.log("Queue asserted"));
+    this.produzirPedido = produzirPedido;
   }
 
-  private async assertQueue() {
-    await this.channel.assertQueue(this.queue, {
-      durable: true,
-    });
-  }
-
-  async consume(message: Queue): Promise<void> {
+  async consume(): Promise<void> {
     if (!this.channel) {
-      throw new Error("Cannot publish on closed channel");
+      throw new Error("Cannot consume on closed channel.");
     }
-    this.channel.sendToQueue(this.queue, Buffer.from(JSON.stringify(message)));
+    await this.channel?.prefetch(1);
+
+    await this.channel?.consume(
+      "pedidos",
+      async (message) => {
+        if (message) {
+          const pedido = JSON.parse(message.content.toString());
+          console.log("Consuming message: ", pedido);
+          await this.produzirPedido.produzirPedido(pedido);
+
+          this.channel?.ack(message);
+          console.log("Message consumed: ", pedido);
+        }
+      },
+      { noAck: false }
+    );
   }
 }
 

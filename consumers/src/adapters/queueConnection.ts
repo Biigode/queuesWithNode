@@ -12,20 +12,20 @@ class AdapterQueueConnection extends PortQueueConnection {
   async connect(): Promise<amqp.Channel> {
     this.connection = await amqp.connect("amqp://localhost:5672");
     this.channel = await this.connection.createChannel();
-
+    console.log("Connected to queue...");
     return this.channel;
   }
 
   async assertQueue(queue: string): Promise<amqp.Channel> {
     if (!this.channel) {
-      throw new Error("Cannot publish on closed channel");
+      throw new Error("Cannot assert on closed channel");
     }
     await this.channel.assertQueue(queue, {
       durable: true,
     });
     
     this.channel.assertQueue(queue, {});
-    console.log("Asserted to queue");
+    console.log("Asserted to queue...");
     return this.channel;
   }
 

@@ -8,13 +8,14 @@ export class AdapterProduzirPedido extends PortProduzirPedido {
   }
   async produzirPedido(pedidoId: string): Promise<void> {
     const pedido = await this.portPedidoDb.buscarPorId(pedidoId);
-
+    console.log("Pedido recebido: ", pedidoId);
     let updatedPedido: Pedido = {
       _id: pedido?._id,
       itens: pedido?.itens || [],
       status: "em preparo",
     };
 
+    console.log("Pedido em preparo: ", pedidoId);
     await this.portPedidoDb.atualizarPedido(updatedPedido);
 
     await new Promise((resolve) => setTimeout(resolve, 20000));
@@ -23,7 +24,7 @@ export class AdapterProduzirPedido extends PortProduzirPedido {
       ...updatedPedido,
       status: "pronto",
     };
-
+    console.log("Pedido pronto: ", pedidoId);
     await this.portPedidoDb.atualizarPedido(updatedPedido);
   }
 }

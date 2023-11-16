@@ -1,7 +1,7 @@
 import amqp from "amqplib";
-import { Queue } from "../interfaces/domain/interfaceQueue.ts";
+import { PortProduzirPedido } from "../domains/ports/produzirPedido.ts";
 
 export abstract class PortQueue {
-  constructor(channel: amqp.Channel, queue: string) {}
-  abstract consume(message: Queue): Promise<void>;
+  constructor(channel: amqp.Channel, produzirPedido: PortProduzirPedido) {}
+  abstract consume(): Promise<void>;
 }

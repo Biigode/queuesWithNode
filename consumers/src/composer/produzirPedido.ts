@@ -4,7 +4,6 @@ import { PortProduzirPedido } from "../domains/ports/produzirPedido.ts";
 
 export class ComposerProduzirPedido {
   compose(): PortProduzirPedido {
-
     return new AdapterProduzirPedido(new AdapterPedidoDb());
   }
 }
