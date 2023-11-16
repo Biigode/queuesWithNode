@@ -1,25 +1,39 @@
-import amqplib from "amqplib";
-import { ComposerProduzirPedido } from "./composer/produzirPedido";
-
-const pedidoComposed = new ComposerProduzirPedido();
-
-const pedidoImplementation = pedidoComposed.compose();
+import mongoose from "mongoose";
+import { AdapterQueueConnection } from "./adapters/queueConnection.ts";
+import { ComposerProduzirPedido } from "./composer/produzirPedido.ts";
 
 (async () => {
-  const connection = await amqplib.connect("amqp://localhost:5672");
-  const channel = await connection.createChannel();
-  channel.assertQueue("pedidos", {});
+  await mongoose.connect("mongodb://localhost:27017/burguer");
 
-  channel.consume(
+  const pedidoImplementation = new ComposerProduzirPedido().compose();
+
+  const queueAdapter = new AdapterQueueConnection();
+  await queueAdapter.connect();
+  await queueAdapter.assertQueue("pedidos");
+
+  await queueAdapter.channel?.prefetch(1);
+  await queueAdapter.channel?.consume(
     "pedidos",
     async (message) => {
       if (message) {
         const pedido = JSON.parse(message.content.toString());
-        const pedidoProduzido = pedidoImplementation.produzirPedido(pedido);
-        console.log(pedidoProduzido);
-        channel.ack(message);
+
+        await pedidoImplementation.produzirPedido(pedido);
+
+        queueAdapter.channel?.ack(message);
       }
     },
     { noAck: false }
   );
+
+  process.on("SIGTERM", () => {
+    console.log("SIGTERM signal received. Shutting down gracefully.");
+    mongoose.connection.close(false).then(() => {
+      console.log("MongoDb connection closed.");
+    });
+    queueAdapter.close().then(() => {
+      console.log("Queue connection closed.");
+    });
+    process.exit(0);
+  });
 })();

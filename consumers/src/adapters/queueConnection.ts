@@ -1,20 +1,31 @@
 import amqp from "amqplib";
 import { PortQueueConnection } from "../ports/queueConnection.ts";
 
-
 class AdapterQueueConnection extends PortQueueConnection {
   private connection: amqp.Connection | null = null;
-  private channel: amqp.Channel | null = null;
+  channel: amqp.Channel | null = null;
 
   constructor() {
     super();
-    this.connect().then(() => console.log("Connected to Queue"));
   }
 
-  async connect() {
+  async connect(): Promise<amqp.Channel> {
     this.connection = await amqp.connect("amqp://localhost:5672");
     this.channel = await this.connection.createChannel();
 
+    return this.channel;
+  }
+
+  async assertQueue(queue: string): Promise<amqp.Channel> {
+    if (!this.channel) {
+      throw new Error("Cannot publish on closed channel");
+    }
+    await this.channel.assertQueue(queue, {
+      durable: true,
+    });
+    
+    this.channel.assertQueue(queue, {});
+    console.log("Asserted to queue");
     return this.channel;
   }
 

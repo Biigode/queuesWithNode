@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "ts-node-dev src/app.ts",
@@ -12,6 +13,7 @@
   "license": "ISC",
   "dependencies": {
     "amqplib": "^0.10.3",
+    "mongoose": "^8.0.1",
     "ts-node": "^10.9.1",
     "typescript": "^5.2.2"
   },
