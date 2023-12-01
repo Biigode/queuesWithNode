@@ -1,25 +1,25 @@
 import mongoose from "mongoose";
-import { AdapterQueue } from "./adapters/queue.ts";
+import { ComposerMail } from "./composers/mail.ts";
 import { AdapterQueueConnection } from "./adapters/queueConnection.ts";
-import { ComposerProduzirPedido } from "./composer/produzirPedido.ts";
+import { AdapterQueue } from "./adapters/queue.ts";
 
 (async () => {
-  console.log("Starting consumer...");
+  console.log("Start mailer...");
   await mongoose.connect("mongodb://localhost:27017/burguer");
 
-  const pedidoImplementation = await new ComposerProduzirPedido().compose();
+  const mailImplementation = new ComposerMail().compose();
   const queueAdapter = new AdapterQueueConnection();
 
   await queueAdapter.connect();
-  await queueAdapter.assertQueue("pedidos");
+  await queueAdapter.assertQueue("mail");
 
   const consumerAdapter = new AdapterQueue(
     queueAdapter.channel!,
-    pedidoImplementation
+    mailImplementation
   );
 
   await consumerAdapter.consume();
-
+  
   process.on("SIGTERM", () => {
     console.log("SIGTERM signal received. Shutting down gracefully.");
     mongoose.connection.close(false).then(() => {

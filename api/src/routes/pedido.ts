@@ -21,8 +21,8 @@ class PedidoRouter {
   }
 
   private post = async (request: Request, response: Response) => {
-    const { pedido }: PedidoRequest = request.body;
-    const idPedido = await this.Pedido.inserir({ pedido });
+    const { pedido, email }: PedidoRequest = request.body;
+    const idPedido = await this.Pedido.inserir({ pedido, email });
     return response
       .json({ mensagem: "Pedido enviado a cozinha", numeroPedido: idPedido })
       .status(200);

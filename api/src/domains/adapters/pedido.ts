@@ -36,6 +36,7 @@ class AdapterPedido extends PortPedido {
     const pedidoCriado = await this.PortPedidoDb.inserirPedido({
       status: "aguardando",
       itens: itensFiltrados,
+      email: pedido.email,
     });
 
     await this.PortQueue.publish({ _id: pedidoCriado });
